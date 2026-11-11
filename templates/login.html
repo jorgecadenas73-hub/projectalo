@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión · Apoyos Sociales</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+    <main class="login-contenedor">
+        <div class="login-caja">
+
+            <h1>Apoyos Sociales</h1>
+            <p class="subtitulo">Iniciar sesión</p>
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                {% with mensajes = get_flashed_messages(with_categories=true) %}
+                    {% for categoria, mensaje in mensajes %}
+                        <p class="error">{{ mensaje }}</p>
+                    {% endfor %}
+                {% endwith %}
+
+                <label for="usuario">Usuario</label>
+                <input
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    placeholder="Ingresa tu usuario"
+                    required
+                >
+
+                <label for="contrasena">Contraseña</label>
+                <input
+                    type="password"
+                    id="contrasena"
+                    name="contrasena"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                >
+
+                <button type="submit">Entrar</button>
+
+            </form>
+
+        </div>
+    </main>
+
+</body>
+</html>

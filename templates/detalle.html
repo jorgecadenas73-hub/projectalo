@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datos de la persona · Apoyos Sociales</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+<main class="contenido">
+  <div class="ficha">
+    <h2>Datos de la persona</h2>
+
+    <form method="POST" action="{{ url_for('detalle', id=registro['id']) }}">
+      <div class="ficha-rejilla">
+        <div><dt>Nombre:</dt> <dd>{{ registro["nombre"] }}</dd></div>
+        <div><dt>Código postal:</dt> <dd>{{ registro["cp"] }}</dd></div>
+        <div><dt>CURP:</dt> <dd>{{ registro["curp"] }}</dd></div>
+        <div><dt>Teléfono:</dt> <dd>{{ registro["telefono"] }}</dd></div>
+        <div><dt>Edad:</dt> <dd>{{ registro["edad"] }}</dd></div>
+        <div><dt>Tipo de apoyo:</dt> <dd>{{ registro["apoyo"] }}</dd></div>
+        <div><dt>Descripción:</dt> <dd>{{ registro["descripcion"]}}</dd></div>
+        <div><dt>Veces que se le dará el apoyo:</dt> <dd>{{ registro["v_apoyo"]}}</dd></div>
+
+        <div class="sexo">
+          <span>Sexo:</span>
+          <div class="opciones-estado">
+            <label><input type="radio" name="sexo" value="M" disabled {{ 'checked' if registro['sexo'] == 'M' }}> M</label>
+            <label><input type="radio" name="sexo" value="H" disabled {{ 'checked' if registro['sexo'] == 'H' }}> H</label>
+            <label><input type="radio" name="sexo" value="Otro" disabled {{ 'checked' if registro['sexo'] == 'Otro' }}> Otro</label>
+          </div>
+        </div>
+
+        <div><dt>Fecha solicitud:</dt> <dd>{{ registro["fecha"] }}</dd></div>
+        <div><dt>Domicilio:</dt> <dd>{{ registro["domicilio"] }}</dd></div>
+    
+        <div><dt>Colonia:</dt> <dd>{{ registro["colonia"] }}</dd></div>
+        <div><dt>Sección:</dt> <dd>{{ registro["seccion"] }}</dd></div>
+        <div><dt>Departamento:</dt> <dd>{{ registro["departamento"] }}</dd></div>
+
+        <div class="estado-full">
+          <span>Estado:</span>
+            {% if registro['estado'] == 'aprobado' %}
+                <div class="mensaje-bloqueado">
+                    ✓ Este apoyo ya fue aprobado y no puede modificarse.
+                </div>
+
+                <div class="estado-final">
+                    ✓ Aprobado
+                </div>
+
+            {% elif registro['estado'] == 'cancelado' %}
+
+                <div class="mensaje-bloqueado">
+                    ✕ Este apoyo fue cancelado y no puede modificarse.
+                </div>
+
+                <div class="estado-final">
+                    ✕ Cancelado
+                </div>
+
+            {% else %}
+
+                <div class="opciones-estado">
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="estado"
+                            value="aprobado"
+                        >
+                        ✓ Aprobado
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="estado"
+                            value="en_firma"
+                            checked
+                        >
+                        ⚠️ En firma
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="estado"
+                            value="cancelado"
+                        >
+                        ✕ Cancelado
+                    </label>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+      </div>
+
+      <div class="acciones">
+        <a href="{{ url_for('busqueda') }}" class="boton boton-cancelar">Cancelar</a>
+        <button type="submit" class="boton boton-registrar">Actualizar</button>
+      </div>
+    </form>
+
+    {% if session.get('rol') == 'administrador' and registro['estado'] in ['aprobado', 'cancelado'] %}
+    <form method="POST"
+        action="{{ url_for('eliminar_registro', id=registro['id']) }}"
+        onsubmit="return confirm('¿Seguro que quieres eliminar este registro? Esta acción no se puede deshacer.');">
+
+        <div class="acciones">
+            <button type="submit" class="boton boton-eliminar">
+                Eliminar registro
+            </button>
+        </div>
+
+    </form>
+    {% endif %}
+  </div>
+</main>
+
+</body>
+</html>  

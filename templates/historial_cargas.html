@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historial de cargas · Apoyos Sociales</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+
+<main class="contenido">
+  <h2>Historial de cargas de Datos</h2>
+
+  {% if lotes %}
+  <table class="tabla-registros">
+    <thead>
+      <tr>
+        <th>Lote</th>
+        <th>Fecha de carga</th>
+        <th>Registros</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for lote in lotes %}
+      <tr>
+        <td>{{ lote["lote_carga"] }}</td>
+        <td>{{ lote["fecha_carga"] }}</td>
+        <td>{{ lote["total"] }}</td>
+        <td>
+          <form method="POST"
+                action="{{ url_for('eliminar_lote', lote_carga=lote['lote_carga']) }}"
+                onsubmit="return confirm('¿Eliminar los {{ total_lote }} registros de este lote? Esta acción no se puede deshacer.');">
+            <button type="submit" class="boton boton-eliminar">Deshacer carga</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>Todavía no hay cargas de datos de CSV</p>
+  {% endif %}
+
+  <a href="{{ url_for('informe') }}" class="boton boton-cancelar">Volver</a>
+</main>
+
+</body>
+</html>

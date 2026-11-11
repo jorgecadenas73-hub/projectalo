@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Apoyos Sociales · Informe</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="encabezado">
+  <img src="{{ url_for('static', filename='assets/logo_cortazar.png') }}" alt="Escudo de Cortázar" class="logo_cortazar">
+  <h1>INFORME</h1>
+</header>
+
+<nav class="nav-principal">
+  <a href="{{ url_for('registro') }}">Registro</a>
+  <a href="{{ url_for('busqueda') }}">Búsqueda</a>
+  <a href="{{ url_for('informe') }}" aria-current="page">Informe</a>
+  <a href="{{ url_for('historial_cargas') }}">Ver historial de cargas de datos</a>
+  <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+</nav>
+
+<main class="contenido">
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% if mensajes %}
+      <div class="mensajes-flash">
+        {% for categoria, mensaje in mensajes %}
+          <div class="flash flash-{{ categoria }}">{{ mensaje }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="panel-informe">
+    <div class="acciones-laterales">
+      <button type="button" class="boton-lateral" id="btnDescargarInforme">Descargar<br>Informe<br><span class="emoji-boton">📊</span></button>
+      <button type="button" class="boton-lateral" id="btnDescargarDatos">Descargar<br>Datos<br><span class="emoji-boton">📥</span></button>
+      <button type="button" class="boton-lateral" id="btnCargarDatos">Cargar<br>Datos<br><span class="emoji-boton">📤</span></button>
+
+      <form id="formCargarDatos" action="{{ url_for('cargar_datos') }}" method="POST" enctype="multipart/form-data" hidden>
+        <input type="file" name="archivo" id="entradaArchivo" accept=".csv">
+      </form>
+    </div>
+
+    <div class="contenido-informe">
+      <div class="kpis">
+        <div class="tarjeta-kpi">
+          <span class="valor-kpi" id="kpiTotal">–</span>
+          <span class="etiqueta-kpi">Total registrados</span>
+        </div>
+        <div class="tarjeta-kpi">
+          <span class="valor-kpi" id="kpiAprobados">–</span>
+          <span class="etiqueta-kpi">Aprobados</span>
+        </div>
+        <div class="tarjeta-kpi">
+          <span class="valor-kpi" id="kpiEnFirma">–</span>
+          <span class="etiqueta-kpi">En firma</span>
+        </div>
+        <div class="tarjeta-kpi">
+          <span class="valor-kpi" id="kpiCancelados">–</span>
+          <span class="etiqueta-kpi">Cancelados</span>
+        </div>
+      </div>
+
+      <div class="graficas">
+        <div class="tarjeta-grafica">
+          <h3>Apoyos por departamento</h3>
+          <!-- Chart.js necesita un contenedor con altura fija cuando
+               se usa maintainAspectRatio: false; sin esto el canvas
+               puede quedar con altura 0 y la gráfica no se ve. -->
+          <div class="contenedor-canvas" style="position: relative; height: 300px; width: 100%;">
+            <canvas id="graficaDepartamento"></canvas>
+          </div>
+        </div>
+        <div class="tarjeta-grafica">
+          <h3>Registros por mes</h3>
+          <div class="contenedor-canvas" style="position: relative; height: 300px; width: 100%;">
+            <canvas id="graficaMensual"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  document.getElementById('btnCargarDatos').addEventListener('click', () => {
+    document.getElementById('entradaArchivo').click();
+  });
+
+  document.getElementById('entradaArchivo').addEventListener('change', () => {
+    document.getElementById('formCargarDatos').submit();
+  });
+
+  document.getElementById('btnDescargarDatos').addEventListener('click', () => {
+    window.location.href = "{{ url_for('descargar_datos') }}";
+  });
+
+  document.getElementById('btnDescargarInforme').addEventListener('click', () => {
+    window.location.href = "{{ url_for('descargar_informe') }}";
+  });
+
+  async function cargarKPIs() {
+    const respuesta = await fetch("{{ url_for('api_kpis') }}");
+    const datos = await respuesta.json();
+    document.getElementById('kpiTotal').textContent = datos.total;
+    document.getElementById('kpiAprobados').textContent = datos.aprobados;
+    document.getElementById('kpiEnFirma').textContent = datos.en_firma;
+    document.getElementById('kpiCancelados').textContent = datos.cancelados;
+  }
+
+  async function cargarGraficaDepartamento() {
+    const respuesta = await fetch("{{ url_for('api_grafica_departamento') }}");
+    const datos = await respuesta.json();
+
+    new Chart(document.getElementById('graficaDepartamento'), {
+      type: 'bar',
+      data: {
+        labels: datos.labels,
+        datasets: [{
+          label: 'Apoyos',
+          data: datos.valores,
+          backgroundColor: '#fc4b08',
+          borderColor: '#de2e03',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  }
+
+  async function cargarGraficaMensual() {
+    const respuesta = await fetch("{{ url_for('api_grafica_mensual') }}");
+    const datos = await respuesta.json();
+
+    new Chart(document.getElementById('graficaMensual'), {
+      type: 'line',
+      data: {
+        labels: datos.labels,
+        datasets: [{
+          label: 'Registros',
+          data: datos.valores,
+          borderColor: '#1a73e8',
+          backgroundColor: 'rgba(26, 115, 232, 0.15)',
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  }
+
+  cargarKPIs();
+  cargarGraficaDepartamento();
+  cargarGraficaMensual();
+</script>
+
+</body>
+</html>

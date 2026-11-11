@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Confirmar datos · Apoyos Sociales</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="encabezado">
+
+    <img
+        src="{{ url_for('static', filename='assets/logo_cortazar.png') }}"
+        alt="Escudo de Cortázar"
+        class="logo_cortazar"
+    >
+
+    <h1>CONFIRMAR DATOS</h1>
+
+</header>
+
+
+<nav class="nav-principal">
+
+    <a href="{{ url_for('registro') }}">
+        Registro
+    </a>
+
+    <a href="{{ url_for('busqueda') }}">
+        Búsqueda
+    </a>
+
+    <a href="{{ url_for('informe') }}">
+        Informe
+    </a>
+
+</nav>
+
+
+<main class="contenido">
+
+    <div class="tarjeta-mensaje">
+
+        <h2>
+            Confirma que los datos de la persona sean correctos
+        </h2>
+
+
+        <div class="datos-confirmacion">
+
+            <p>
+                <strong>Nombre:</strong>
+                {{ datos.nombre }}
+            </p>
+
+            <p>
+                <strong>CURP:</strong>
+                {{ datos.curp }}
+            </p>
+
+            <p>
+                <strong>Teléfono:</strong>
+                {{ datos.telefono }}
+            </p>
+
+            <p>
+                <strong>Código postal:</strong>
+                {{ datos.cp }}
+            </p>
+
+            <p>
+                <strong>Colonia:</strong>
+                {{ datos.colonia }}
+            </p>
+
+            <p>
+                <strong>Sección:</strong>
+                {{ datos.seccion }}
+            </p>
+
+            <p>
+                <strong>Fecha:</strong>
+                {{ datos.fecha }}
+            </p>
+
+        </div>
+
+
+        <form method="POST">
+
+            <div class="acciones">
+
+                <button
+                    type="submit"
+                    name="accion"
+                    value="volver"
+                    class="boton boton-secundario"
+                >
+                    Regresar
+                </button>
+
+
+                <button
+                    type="submit"
+                    name="accion"
+                    value="si"
+                    class="boton boton-registrar"
+                >
+                    Sí, continuar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

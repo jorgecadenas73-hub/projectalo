@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Búsqueda · Apoyos Sociales</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <img
+            src="{{ url_for('static', filename='assets/logo_cortazar.png') }}"
+            alt="Escudo de Cortázar"
+            class="logo_cortazar"
+        >
+
+        <h1>BÚSQUEDA</h1>
+    </header>
+
+    <nav class="nav-principal">
+        <a href="{{ url_for('registro') }}">
+            Registro
+        </a>
+
+        <a
+            href="{{ url_for('busqueda') }}"
+            aria-current="page"
+        >
+            Búsqueda
+        </a>
+
+        <a href="{{ url_for('informe') }}">
+            Informe
+        </a>
+
+        <a href="{{ url_for('historial_cargas') }}">
+            Ver historial de cargas de datos
+        </a>
+        <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+    </nav>
+
+    <main class="contenido">
+
+        <div class="buscadores">
+
+            <div class="campo-busqueda">
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line
+                        x1="21"
+                        y1="21"
+                        x2="16.65"
+                        y2="16.65"
+                    ></line>
+                </svg>
+
+                <input
+                    type="text"
+                    id="buscarCp"
+                    placeholder="Buscar por código postal"
+                >
+            </div>
+
+            <div class="campo-busqueda">
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line
+                        x1="21"
+                        y1="21"
+                        x2="16.65"
+                        y2="16.65"
+                    ></line>
+                </svg>
+
+                <input
+                    type="text"
+                    id="buscarNombre"
+                    placeholder="Buscar por nombre"
+                >
+            </div>
+
+            <div class="campo-busqueda">
+                <select id="filtroEstado">
+                    <option value="">Todos los estados</option>
+                    <option value="aprobado">✅ Aprobados</option>
+                    <option value="en_firma">⚠️ En firma</option>
+                    <option value="cancelado">❌ Cancelados</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="tabla-envoltorio">
+
+            <table class="tabla-datos">
+
+                <thead>
+                    <tr>
+                        <th>Ver datos completos</th>
+                        <th>Número de folio</th>
+                        <th>Nombre</th>
+                        <th>CURP</th>
+                        <th>Código Postal</th>
+                        <th>Teléfono</th>
+                        <th>Departamento</th>
+                        <th>Sección</th>
+                        <th>Apoyo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody id="cuerpoTabla">
+
+                    {% for registro in registros %}
+
+                    <tr data-estado="{{ registro['estado'] }}">
+                        <td>
+                            <button
+                                type="button"
+                                class="boton-ver"
+                                data-href="{{
+                                    url_for(
+                                        'detalle',
+                                        id=registro['id']
+                                    )
+                                }}"
+                            >
+                                Ver
+                            </button>
+                        </td>
+
+                        <td>
+                            {{ "%04d"|format(registro["id"]) }}
+                        </td>
+
+                        <td>
+                            {{ registro["nombre"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["curp"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["cp"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["telefono"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["departamento"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["seccion"] }}
+                        </td>
+
+                        <td>
+                            {{ registro["apoyo"] }}
+                        </td>
+
+                        <td
+                            class="estado-icono estado-{{ registro['estado'] }}"
+                        >
+
+                            {% if registro['estado'] == 'aprobado' %}
+
+                                ✅Aprobado
+
+                            {% elif registro['estado'] == 'en_firma' %}
+
+                                ⚠️En firma
+
+                            {% elif registro['estado'] == 'cancelado' %}
+
+                                ❌Cancelado
+
+                            {% else %}
+
+                                {{ registro['estado'] }}
+
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="10">
+                            No hay registros guardados.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+    <script>
+        const buscarCp = document.getElementById("buscarCp");
+        const buscarNombre = document.getElementById("buscarNombre");
+        const filtroEstado = document.getElementById("filtroEstado");
+
+        function obtenerFilas() {
+            return Array.from(
+                document.querySelectorAll("#cuerpoTabla tr")
+            );
+        }
+
+        function filtrar() {
+            const cp = buscarCp.value.trim().toLowerCase();
+            const nombre = buscarNombre.value.trim().toLowerCase();
+            const estado = filtroEstado.value;
+
+            obtenerFilas().forEach((fila) => {
+                const celdas = fila.querySelectorAll("td");
+
+                if (celdas.length < 10) {
+                    return;
+                }
+
+                const textoNombre = celdas[2].textContent.trim().toLowerCase();
+                const textoCp = celdas[4].textContent.trim().toLowerCase();
+
+                const coincideNombre = !nombre || textoNombre.includes(nombre);
+                const coincideCp = !cp || textoCp.includes(cp);
+                const coincideEstado = !estado || fila.dataset.estado === estado;
+
+                fila.hidden = !(
+                    coincideNombre &&
+                    coincideCp &&
+                    coincideEstado
+                );
+            });
+        }
+
+        buscarCp.addEventListener("input", filtrar);
+        buscarNombre.addEventListener("input", filtrar);
+        filtroEstado.addEventListener("change", filtrar);
+
+        document
+            .querySelectorAll(".boton-ver")
+            .forEach((boton) => {
+                boton.addEventListener("click", () => {
+                    window.location.href = boton.dataset.href;
+                });
+            });
+    </script>
+
+</body>
+</html>

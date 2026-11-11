@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registro · Apoyos Sociales</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+</head>
+
+<body>
+
+<header class="encabezado">
+
+    <img
+        src="{{ url_for('static', filename='assets/logo_cortazar.png') }}"
+        alt="Escudo de Cortázar"
+        class="logo_cortazar"
+    >
+
+    <h1>REGISTRO</h1>
+
+</header>
+
+<nav class="nav-principal">
+
+    <a
+        href="{{ url_for('registro') }}"
+        aria-current="page"
+    >
+        Registro
+    </a>
+
+    <a href="{{ url_for('busqueda') }}">
+        Búsqueda
+    </a>
+
+    <a href="{{ url_for('informe') }}">
+        Informe
+    </a>
+
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+
+
+</nav>
+
+<main class="contenido">
+
+    <h2>Registro de persona</h2>
+
+    <div class="escaneo-ine">
+    <button type="button" id="btn-escanear" class="boton boton-escanear">
+        📷 Escanear credencial
+    </button>
+    <span id="ine-estado" class="ine-estado"></span>
+
+    <!-- Respaldo: abre la cámara nativa del celular o el selector de archivos -->
+    <input type="file" id="ine-archivo" accept="image/*" capture="environment" hidden>
+</div>
+
+<dialog id="dlg-camara" class="dlg-camara">
+    <p>Coloca el frente de la credencial dentro del cuadro, con buena luz y sin reflejos.</p>
+    <div class="visor">
+        <video id="video-camara" autoplay playsinline muted></video>
+        <div class="guia-ine"></div>
+    </div>
+    <div class="acciones">
+        <button type="button" id="btn-cancelar-cam" class="boton boton-limpiar">Cancelar</button>
+        <button type="button" id="btn-capturar" class="boton boton-registrar">Capturar</button>
+    </div>
+</dialog>
+
+    <form
+        method="POST"
+        action="{{ url_for('registro') }}"
+        novalidate
+    >
+
+        <div class="rejilla-formulario">
+
+            <!-- NOMBRE -->
+            <div class="campo">
+
+                <label for="nombre">
+                    Nombre completo:
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ datos.nombre }}"
+                    placeholder="Ingresa el nombre completo"
+                    required
+                >
+
+                {% if errores.nombre %}
+                    <span class="mensaje-error">
+                        {{ errores.nombre }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- CURP -->
+            <div class="campo">
+
+                <label for="curp">
+                    CURP:
+                </label>
+
+                <input
+                    type="text"
+                    id="curp"
+                    name="curp"
+                    maxlength="18"
+                    value="{{ datos.curp }}"
+                    placeholder="Ingresa la CURP"
+                    required
+                >
+
+                {% if errores.curp %}
+                    <span class="mensaje-error">
+                        {{ errores.curp }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- TELEFONO -->
+            <div class="campo">
+
+                <label for="telefono">
+                    Teléfono:
+                </label>
+
+                <input
+                    type="text"
+                    id="telefono"
+                    name="telefono"
+                    maxlength="10"
+                    value="{{ datos.telefono }}"
+                    placeholder="10 dígitos"
+                    required
+                >
+
+                {% if errores.telefono %}
+                    <span class="mensaje-error">
+                        {{ errores.telefono }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- CP -->
+            <div class="campo">
+
+                <label for="cp">
+                    Código postal:
+                </label>
+
+                <input
+                    type="text"
+                    id="cp"
+                    name="cp"
+                    maxlength="5"
+                    value="{{ datos.cp }}"
+                    placeholder="5 dígitos"
+                    required
+                >
+
+                {% if errores.cp %}
+                    <span class="mensaje-error">
+                        {{ errores.cp }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- COLONIA -->
+            <div class="campo">
+
+                <label for="colonia">
+                    Colonia:
+                </label>
+
+                <select
+                    id="colonia"
+                    name="colonia"
+                    required
+                    disabled
+                >
+                    <option value="">
+                        Primero captura un CP válido
+                    </option>
+                </select>
+
+                <span
+                    id="colonia-estado"
+                    style="color: gray; font-size: 0.9em;"
+                ></span>
+
+                {% if errores.colonia %}
+                    <span class="mensaje-error">
+                        {{ errores.colonia }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="seccion">
+                    Sección:
+                </label>
+
+                <input
+                    type="text"
+                    id="seccion"
+                    name="seccion"
+                    maxlength="4"
+                    value="{{ datos.seccion }}"
+                    placeholder="Máximo 4 dígitos"
+                    required
+                >
+
+                {% if errores.seccion %}
+                    <span class="mensaje-error">
+                        {{ errores.seccion }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+
+            <!-- FECHA -->
+            <div class="campo">
+
+                <label for="fecha">
+                    Fecha:
+                </label>
+
+                <input
+                    type="date"
+                    id="fecha"
+                    name="fecha"
+                    value="{{ datos.fecha }}"
+                    required
+                >
+
+                {% if errores.fecha %}
+                    <span class="mensaje-error">
+                        {{ errores.fecha }}
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="acciones">
+            <button
+                type="reset"
+                class="boton boton-limpiar"
+            >
+                Limpiar
+            </button>
+
+            <button
+                type="submit"
+                class="boton boton-registrar"
+            >
+                Continuar
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+
+<script>
+
+let coloniaPrevia = "{{ datos.colonia }}";
+
+const campoCp =
+    document.getElementById("cp");
+
+const selectColonia =
+    document.getElementById("colonia");
+
+const estadoColonia =
+    document.getElementById("colonia-estado");
+
+
+async function buscarColonias(cp) {
+
+    if (!/^\d{5}$/.test(cp)) {
+
+        selectColonia.disabled = true;
+
+        selectColonia.innerHTML =
+            '<option value="">Primero captura un CP válido</option>';
+
+        estadoColonia.textContent = "";
+
+        return;
+    }
+
+
+    estadoColonia.textContent =
+        "...";
+
+
+    try {
+
+        const respuesta =
+            await fetch(`/api/colonias/${cp}`);
+
+        const datos =
+            await respuesta.json();
+
+
+        if (
+            !datos.colonias ||
+            datos.colonias.length === 0
+        ) {
+
+            selectColonia.disabled = true;
+
+            selectColonia.innerHTML =
+                '<option value="">No se encontraron colonias para ese CP</option>';
+
+            estadoColonia.textContent =
+                "Verifica el código postal capturado.";
+
+            return;
+        }
+
+
+        selectColonia.disabled = false;
+
+        selectColonia.innerHTML =
+            '<option value="">Selecciona una colonia</option>';
+
+
+        datos.colonias.forEach(function(colonia) {
+
+            const opcion =
+                document.createElement("option");
+
+            opcion.value = colonia;
+
+            opcion.textContent = colonia;
+
+
+            if (colonia === coloniaPrevia) {
+
+                opcion.selected = true;
+
+            }
+
+
+            selectColonia.appendChild(opcion);
+
+        });
+
+
+        estadoColonia.textContent = "";
+
+    } catch (error) {
+
+        selectColonia.disabled = true;
+
+        estadoColonia.textContent =
+            "No se pudo consultar el catálogo de colonias.";
+
+    }
+
+}
+
+
+campoCp.addEventListener(
+    "input",
+    function() {
+
+        buscarColonias(
+            campoCp.value.trim()
+        );
+
+    }
+);
+
+
+if (campoCp.value.trim()) {
+
+    buscarColonias(
+        campoCp.value.trim()
+    );
+
+}
+
+
+// ===== ESCANEO DE CREDENCIAL =====
+const btnEscanear   = document.getElementById("btn-escanear");
+const inputArchivo  = document.getElementById("ine-archivo");
+const dlgCamara     = document.getElementById("dlg-camara");
+const video         = document.getElementById("video-camara");
+const estadoIne     = document.getElementById("ine-estado");
+let streamCamara    = null;
+
+function detenerCamara() {
+    if (streamCamara) {
+        streamCamara.getTracks().forEach(t => t.stop());
+        streamCamara = null;
+    }
+    if (dlgCamara.open) dlgCamara.close();
+}
+
+btnEscanear.addEventListener("click", async function () {
+    // En http (sin https) el navegador no expone la cámara: usamos el respaldo
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        inputArchivo.click();
+        return;
+    }
+    try {
+        streamCamara = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 } }
+        });
+        video.srcObject = streamCamara;
+        dlgCamara.showModal();
+    } catch (e) {
+        inputArchivo.click();
+    }
+});
+
+document.getElementById("btn-cancelar-cam").addEventListener("click", detenerCamara);
+dlgCamara.addEventListener("cancel", detenerCamara);
+
+document.getElementById("btn-capturar").addEventListener("click", function () {
+    const canvas = document.createElement("canvas");
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    detenerCamara();
+    canvas.toBlob(enviarImagen, "image/jpeg", 0.92);
+});
+
+inputArchivo.addEventListener("change", function () {
+    if (inputArchivo.files.length) enviarImagen(inputArchivo.files[0]);
+    inputArchivo.value = "";
+});
+
+async function enviarImagen(blob) {
+    estadoIne.textContent = "Leyendo credencial...";
+    const fd = new FormData();
+    fd.append("imagen", blob, "ine.jpg");
+
+    try {
+        const resp = await fetch("/api/escanear-ine", { method: "POST", body: fd });
+        const d = await resp.json();
+        if (!resp.ok) throw new Error(d.error || "Error al leer la imagen");
+        await rellenarFormulario(d);
+    } catch (e) {
+        estadoIne.textContent = e.message || "No se pudo leer la credencial. Captura los datos manualmente.";
+    }
+}
+
+function normalizar(s) {
+    return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+}
+
+function poner(id, valor) {
+    const el = document.getElementById(id);
+    if (!valor) return false;
+    el.value = valor;
+    el.classList.add("autocompletado");
+    return true;
+}
+
+async function rellenarFormulario(d) {
+    const faltan = [];
+
+    if (!poner("nombre", d.nombre))   faltan.push("nombre");
+    if (!poner("curp", d.curp))       faltan.push("CURP");
+    if (!poner("seccion", d.seccion)) faltan.push("sección");
+
+    if (poner("cp", d.cp)) {
+        await buscarColonias(d.cp);
+
+        // Intenta elegir la colonia que aparece en el domicilio (la más larga que coincida)
+        let mejor = null;
+        const dom = normalizar(d.domicilio || "");
+        for (const op of selectColonia.options) {
+            if (op.value && dom.includes(normalizar(op.value))) {
+                if (!mejor || op.value.length > mejor.value.length) mejor = op;
+            }
+        }
+        if (mejor) {
+            mejor.selected = true;
+            selectColonia.classList.add("autocompletado");
+        } else if (!selectColonia.disabled) {
+            faltan.push("colonia");
+        }
+    } else {
+        faltan.push("código postal", "colonia");
+    }
+
+    faltan.push("teléfono", "fecha"); // la credencial no los trae
+
+    estadoIne.textContent =
+        "Revisa los datos resaltados y corrígelos si hace falta. Falta capturar: " +
+        faltan.join(", ") + ".";
+}
+
+// Al editar un campo resaltado, se quita el resaltado
+["nombre", "curp", "seccion", "cp", "colonia"].forEach(function (id) {
+    const el = document.getElementById(id);
+    el.addEventListener("input",  () => el.classList.remove("autocompletado"));
+    el.addEventListener("change", () => el.classList.remove("autocompletado"));
+});
+
+</script>
+
+</body>
+</html>

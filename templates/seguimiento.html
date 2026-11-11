@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Seguimiento · Apoyos Sociales</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="encabezado">
+
+    <img
+        src="{{ url_for('static', filename='assets/logo_cortazar.png') }}"
+        alt="Escudo de Cortázar"
+        class="logo_cortazar"
+    >
+
+    <h1>SEGUIMIENTO</h1>
+
+</header>
+
+
+<nav class="nav-principal">
+
+    <a href="{{ url_for('registro') }}">
+        Registro
+    </a>
+
+    <a href="{{ url_for('busqueda') }}">
+        Búsqueda
+    </a>
+
+    <a href="{{ url_for('informe') }}">
+        Informe
+    </a>
+
+</nav>
+
+
+<main class="contenido">
+
+    <h2>Datos de seguimiento</h2>
+
+
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+
+        {% if mensajes %}
+
+            <div class="mensajes-flash">
+
+                {% for categoria, mensaje in mensajes %}
+
+                    <div class="flash flash-{{ categoria }}">
+                        {{ mensaje }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <form
+        method="POST"
+        novalidate
+    >
+
+        <section class="bloque-formulario">
+
+            <h3>Datos de la persona</h3>
+
+
+            <div class="rejilla-formulario">
+
+                <div class="campo">
+
+                    <label for="nombre">
+                        Nombre completo:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        value="{{ datos.nombre }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="curp">
+                        CURP:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="curp"
+                        value="{{ datos.curp }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="telefono">
+                        Teléfono:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="telefono"
+                        value="{{ datos.telefono }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="cp">
+                        Código postal:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cp"
+                        value="{{ datos.cp }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="colonia">
+                        Colonia:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="colonia"
+                        value="{{ datos.colonia }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="seccion">
+                        Sección:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="seccion"
+                        value="{{ datos.seccion }}"
+                        readonly
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="fecha">
+                        Fecha:
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fecha"
+                        value="{{ datos.fecha }}"
+                        readonly
+                    >
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="bloque-formulario">
+
+            <h3>Información del apoyo</h3>
+
+
+            <div class="rejilla-formulario">
+
+
+                <!-- EDAD -->
+                <div class="campo">
+
+                    <label for="edad">
+                        Edad:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="edad"
+                        name="edad"
+                        maxlength="3"
+                        value="{{ seguimiento_datos.edad }}"
+                        placeholder="Ingresa la edad"
+                    >
+
+
+                </div>
+
+
+                <!-- SEXO -->
+                <div class="campo">
+
+                    <label for="sexo">
+                        Sexo:
+                    </label>
+
+                    <select
+                        id="sexo"
+                        name="sexo"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona una opción
+                        </option>
+
+                        <option
+                            value="Femenino"
+                            {% if seguimiento_datos.sexo == "M" %}
+                                selected
+                            {% endif %}
+                        >
+                            Mujer
+                        </option>
+
+                        <option
+                            value="Masculino"
+                            {% if seguimiento_datos.sexo == "H" %}
+                                selected
+                            {% endif %}
+                        >
+                            Hombre
+                        </option>
+
+                        <option
+                            value="Otro"
+                            {% if seguimiento_datos.sexo == "Otro" %}
+                                selected
+                            {% endif %}
+                        >
+                            Otro
+                        </option>
+
+                    </select>
+
+
+                    {% if errores.sexo %}
+
+                        <span class="mensaje-error">
+                            {{ errores.sexo }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- DOMICILIO -->
+                <div class="campo">
+
+                    <label for="domicilio">
+                        Domicilio:
+                    </label>
+
+                    <input
+                        type="text"
+                        id="domicilio"
+                        name="domicilio"
+                        value="{{ seguimiento_datos.domicilio }}"
+                        placeholder="Ingresa el domicilio"
+                        required
+                    >
+
+
+                    {% if errores.domicilio %}
+
+                        <span class="mensaje-error">
+                            {{ errores.domicilio }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- APOYO -->
+                <div class="campo">
+
+                    <label for="apoyo">
+                        Tipo de Apoyo solicitado:
+                    </label>
+
+                    
+                    <select
+                        id="apoyo"
+                        name="apoyo"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona una opción
+                        </option>
+
+                        <option
+                            value="Economico"
+                            {% if seguimiento_datos.apoyo == "Economico" %}
+                                selected
+                            {% endif %}
+                        >
+                            Economico
+                        </option>
+
+                        <option
+                            value="Tinaco"
+                            {% if seguimiento_datos.apoyo == "Tinaco" %}
+                                selected
+                            {% endif %}
+                        >
+                            Tinaco
+                        </option>
+
+                        <option
+                            value="Trofeos o Medallas"
+                            {% if seguimiento_datos.apoyo == "Trofeos o Medallas" %}
+                                selected
+                            {% endif %}
+                        >
+                            Trofeos o Medallas
+                        </option>
+
+                        <option
+                            value="Habitación Aislada"
+                            {% if seguimiento_datos.apoyo == "Habitación Aislada" %}
+                                selected
+                            {% endif %}
+                        >
+                            Habitación Aislada
+                        </option>
+
+                        <option
+                            value="Pintura"
+                            {% if seguimiento_datos.apoyo == "Pintura" %}
+                                selected
+                            {% endif %}
+                        >
+                            Pintura
+                        </option>
+
+                        <option
+                            value="Mobiliario para negocio"
+                            {% if seguimiento_datos.apoyo == "Mobiliario para negocio" %}
+                                selected
+                            {% endif %}
+                        >
+                            Mobiliario para negocio
+                        </option>
+
+                        <option
+                            value="Pipa de agua"
+                            {% if seguimiento_datos.apoyo == "Pipa de agua" %}
+                                selected
+                            {% endif %}
+                        >
+                            Pipa de agua
+                        </option>
+
+                        <option
+                            value="Transporte"
+                            {% if seguimiento_datos.apoyo == "Transporte" %}
+                                selected
+                            {% endif %}
+                        >
+                                Transporte
+                        </option>
+
+                        <option
+                            value="Andador, Andadera, triciclo, muletas, silla de ruedas o bastón"
+                            {% if seguimiento_datos.apoyo == "Andador, Andadera, triciclo, muletas, silla de ruedas o bastón" %}
+                                selected
+                            {% endif %}
+                        >
+                               Andador, Andadera, triciclo, muletas, silla de ruedas o bastón
+                        </option>
+
+                        <option
+                            value="Operación"
+                            {% if seguimiento_datos.apoyo == "Operación" %}
+                                selected
+                            {% endif %}
+                        >
+                               Operación
+                        </option>
+
+                        <option
+                            value="Tratamiento Médico"
+                            {% if seguimiento_datos.apoyo == "Tratamiento Médico" %}
+                                selected
+                            {% endif %}
+                        >
+                               Tratamiento Médico
+                        </option>
+                        
+                        <option
+                            value="Viaticos(gastos)"
+                            {% if seguimiento_datos.apoyo == "Viaticos(gastos)" %}
+                                selected
+                            {% endif %}
+                        >
+                               Viaticos(gastos)
+                        </option>
+
+                        <option
+                            value="Funerario"
+                            {% if seguimiento_datos.apoyo == "Funerario" %}
+                                selected
+                            {% endif %}
+                        >
+                                Funerario
+                        </option>
+
+                        <option
+                            value="Mobiliario para deporte"
+                            {% if seguimiento_datos.apoyo == "Mobiliario para deporte" %}
+                                selected
+                            {% endif %}
+                        >
+                                Mobiliario para deporte
+                        </option>
+
+                        <option
+                            value="Material para construcción"
+                            {% if seguimiento_datos.apoyo == "Material para construcción" %}
+                                selected
+                            {% endif %}
+                        >
+                                Material para construcción
+                        </option>
+
+                        <option
+                            value="Material para eventos"
+                            {% if seguimiento_datos.apoyo == "Material para eventos" %}
+                                selected
+                            {% endif %}
+                        >
+                                Material para eventos
+                        </option>
+
+                        <option
+                            value="Uniformes o vestuario"
+                            {% if seguimiento_datos.apoyo == "Uniformes o vestuario" %}
+                                selected
+                            {% endif %}
+                        >
+                                Uniformes o vestuario
+                        </option>
+
+                        <option
+                            value="Alimentación"
+                            {% if seguimiento_datos.apoyo == "Alimentación" %}
+                                selected
+                            {% endif %}
+                        >
+                                Alimentación
+                        </option>
+
+                        <option
+                            value="Negocio y Emprendimiento"
+                            {% if seguimiento_datos.apoyo == "Negocio y Emprendimiento" %}
+                                selected
+                            {% endif %}
+                        >
+                               Negocio y Emprendimiento
+                        </option>
+
+                        <option
+                            value="Mobiliario para vivienda"
+                            {% if seguimiento_datos.apoyo == "Mobiliario para vivienda" %}
+                                selected
+                            {% endif %}
+                        >
+                               Mobiliario para vivienda
+                        </option>
+
+                        <option
+                            value="Salud"
+                            {% if seguimiento_datos.apoyo == "Salud" %}
+                                selected
+                            {% endif %}
+                        >
+                               Salud
+                        </option>
+
+                        <option
+                            value="Educación"
+                            {% if seguimiento_datos.apoyo == "Educación" %}
+                                selected
+                            {% endif %}
+                        >
+                               Educación
+                        </option>
+
+                        <option
+                            value="Otro"
+                            {% if seguimiento_datos.apoyo == "Otro" %}
+                                selected
+                            {% endif %}
+                        >
+                               Otro
+                        </option>
+
+
+                    </select>
+
+
+                    {% if errores.apoyo %}
+
+                        <span class="mensaje-error">
+                            {{ errores.apoyo }}
+                        </span>
+
+                    {% endif %}
+
+                <!-- Descripción -->
+                <div class="campo">
+
+                    <label for="descripcion">
+                        Descripción del apoyo (¿Por qué?, ¿Para qué?):
+                    </label>
+
+                    <input
+                        type="text"
+                        id="descripcion"
+                        name="descripcion"
+                        maxlength="150"
+                        value="{{ seguimiento_datos.descripcion }}"
+                        placeholder="Ingresa una descripcion del apoyo"
+                    >
+
+                </div>
+
+                <!-- Veces que se le dará el apoyo -->
+                <div class="campo">
+
+                    <label for="departamento">
+                        Veces que se le dará el apoyo:
+                    </label>
+
+                    <select
+                        id="v_apoyo"
+                        name="v_apoyo"
+                        required
+                    >
+
+                        <option value="">
+                            -
+                        </option>
+
+                        <option
+                            value="Una sola vez"
+                            {% if seguimiento_datos.v_apoyo == "Una sola vez" %}
+                                selected
+                            {% endif %}
+                        >
+                            Una sola vez
+                        </option>
+
+                        <option
+                            value="Constante"
+                            {% if seguimiento_datos.v_apoyo == "Constante" %}
+                                selected
+                            {% endif %}
+                        >
+                            Constante
+                        </option>
+
+                    </select>
+
+
+                    {% if errores.v_apoyo %}
+
+                        <span class="mensaje-error">
+                            {{ errores.v_apoyo }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- DEPARTAMENTO -->
+                <div class="campo">
+
+                    <label for="departamento">
+                        Departamento:
+                    </label>
+
+                    <select
+                        id="departamento"
+                        name="departamento"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona una opción
+                        </option>
+
+                        <option
+                            value="Desarrollo Social"
+                            {% if seguimiento_datos.departamento == "Desarrollo Social" %}
+                                selected
+                            {% endif %}
+                        >
+                            Desarrollo Social
+                        </option>
+
+                        <option
+                            value="Desarrollo Económico"
+                            {% if seguimiento_datos.departamento == "Desarrollo Económico" %}
+                                selected
+                            {% endif %}
+                        >
+                            Desarrollo Económico
+                        </option>
+
+                        <option
+                            value="DIF Cortázar"
+                            {% if seguimiento_datos.departamento == "DIF Cortázar" %}
+                                selected
+                            {% endif %}
+                        >
+                            DIF Cortázar
+                        </option>
+
+                        <option
+                            value="Atención Ciudadana"
+                            {% if seguimiento_datos.departamento == "Atención Ciudadana" %}
+                                selected
+                            {% endif %}
+                        >
+                            Atención Ciudadana
+                        </option>
+
+                        <option
+                            value="Casa Naranja"
+                            {% if seguimiento_datos.departamento == "Casa Naranja" %}
+                                selected
+                            {% endif %}
+                        >
+                            Casa Naranja
+                        </option>
+
+                    </select>
+
+
+                    {% if errores.departamento %}
+
+                        <span class="mensaje-error">
+                            {{ errores.departamento }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="acciones">
+
+            <a
+                href="{{ url_for('registro') }}"
+                class="boton boton-cancelar"
+            >
+                Cancelar
+            </a>
+
+            <button
+                type="submit"
+                class="boton boton-registrar"
+            >
+                Guardar seguimiento
+            </button>
+
+        </div>
+
+    </form>
+
+</main>
+
+</body>
+</html>

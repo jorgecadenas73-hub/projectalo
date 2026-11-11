@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Apoyo existente · Apoyos Sociales</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/estilos.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header class="encabezado">
+
+    <img
+        src="{{ url_for('static', filename='assets/logo_cortazar.png') }}"
+        alt="Escudo de Cortázar"
+        class="logo_cortazar"
+    >
+
+    <h1>APOYO EXISTENTE</h1>
+
+</header>
+
+
+<nav class="nav-principal">
+
+    <a href="{{ url_for('registro') }}">
+        Registro
+    </a>
+
+    <a href="{{ url_for('busqueda') }}">
+        Búsqueda
+    </a>
+
+    <a href="{{ url_for('informe') }}">
+        Informe
+    </a>
+
+</nav>
+
+
+<main class="contenido">
+
+    <div class="tarjeta-mensaje">
+
+        <div class="icono-alerta">
+            ⚠️
+        </div>
+
+
+        <h2>
+            La persona ya está registrada
+        </h2>
+
+
+        <p>
+            La persona
+            <strong>{{ datos.nombre }}</strong>
+            ya cuenta con el siguiente apoyo:
+        </p>
+
+
+        
+        <div class="detalle-apoyo-existente">
+
+            {% for apoyo in seguimiento_datos %}
+
+                <p>
+                    <strong>Apoyo:</strong>
+                    {{ apoyo.apoyo }}
+                </p>
+
+                <p>
+                    <strong>Departamento:</strong>
+                    {{ apoyo.departamento }}
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>
+                    {{ ESTATUS[apoyo.estado] }}
+                </p>
+
+                <hr>
+
+            {% endfor %}
+
+        </div>
+
+
+
+        <h3>
+            ¿Desea otorgarle otro apoyo a la persona?
+        </h3>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('decidir_otro_apoyo') }}"
+        >
+
+            <input
+                type="hidden"
+                name="nombre"
+                value="{{ datos.nombre }}"
+            >
+
+            <input
+                type="hidden"
+                name="curp"
+                value="{{ datos.curp }}"
+            >
+
+            <input
+                type="hidden"
+                name="telefono"
+                value="{{ datos.telefono }}"
+            >
+
+            <input
+                type="hidden"
+                name="cp"
+                value="{{ datos.cp }}"
+            >
+
+            <input
+                type="hidden"
+                name="colonia"
+                value="{{ datos.colonia }}"
+            >
+
+            <input
+                type="hidden"
+                name="seccion"
+                value="{{ datos.seccion }}"
+            >
+
+            <input
+                type="hidden"
+                name="fecha"
+                value="{{ datos.fecha }}"
+            >
+
+
+            <div class="acciones">
+
+                <button
+                    type="submit"
+                    name="respuesta"
+                    value="no"
+                    class="boton boton-secundario"
+                >
+                    No, regresar a registro
+                </button>
+
+
+                <button
+                    type="submit"
+                    name="respuesta"
+                    value="si"
+                    class="boton boton-registrar"
+                >
+                    Sí, otorgar otro apoyo
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>
